@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CTA = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="py-24 bg-gradient-to-br from-primary via-primary to-primary/90 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.1),transparent_50%)]" />
@@ -27,6 +30,7 @@ const CTA = () => {
               size="lg" 
               variant="secondary"
               className="group shadow-xl hover:shadow-2xl transition-all"
+              onClick={() => navigate("/auth")}
             >
               Get Started Now
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -35,6 +39,7 @@ const CTA = () => {
               size="lg" 
               variant="outline"
               className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 shadow-lg"
+              onClick={() => navigate("/auth")}
             >
               Contact Us
             </Button>

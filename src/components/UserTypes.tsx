@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Store, ShoppingBag, Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const vendorFeatures = [
   "Easy shop registration & profile setup",
@@ -20,6 +21,8 @@ const customerFeatures = [
 ];
 
 const UserTypes = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="py-24 bg-gradient-to-b from-secondary/30 to-background">
       <div className="container mx-auto px-4">
@@ -57,7 +60,11 @@ const UserTypes = () => {
               ))}
             </ul>
             
-            <Button className="w-full" size="lg">
+            <Button 
+              className="w-full" 
+              size="lg"
+              onClick={() => navigate("/auth")}
+            >
               Register Your Shop
             </Button>
           </div>
@@ -86,7 +93,12 @@ const UserTypes = () => {
               ))}
             </ul>
             
-            <Button variant="outline" className="w-full" size="lg">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              size="lg"
+              onClick={() => navigate("/auth")}
+            >
               Start Shopping
             </Button>
           </div>
