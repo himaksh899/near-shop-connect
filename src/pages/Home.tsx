@@ -5,14 +5,26 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Store, MapPin, Search, Package, ShoppingCart, Heart } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+
+interface Shop {
+  id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  location: string | null;
+  category: string | null;
+}
 
 const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [shopsLoading, setShopsLoading] = useState(false);
 
   useEffect(() => {
     // Check authentication
@@ -41,6 +53,27 @@ const Home = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchShops = async () => {
+      setShopsLoading(true);
+      const { data, error } = await supabase
+        .from("shops")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching shops:", error);
+      } else {
+        setShops(data || []);
+      }
+      setShopsLoading(false);
+    };
+
+    if (user) {
+      fetchShops();
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -214,11 +247,69 @@ const Home = () => {
               <CardDescription>Popular local businesses in your area</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <Store className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg mb-2">No shops available yet</p>
-                <p className="text-sm">Shops will appear here once vendors register in your area</p>
-              </div>
+              {shopsLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-4">
+                      <Skeleton className="h-48 w-full rounded-lg" />
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : shops.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {shops.map((shop) => (
+                    <Card key={shop.id} className="overflow-hidden hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+                      <div className="aspect-video relative bg-muted">
+                        {shop.image_url ? (
+                          <img
+                            src={shop.image_url}
+                            alt={shop.name}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full">
+                            <Store className="h-16 w-16 text-muted-foreground opacity-50" />
+                          </div>
+                        )}
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="text-xl">{shop.name}</CardTitle>
+                        {shop.location && (
+                          <CardDescription className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {shop.location}
+                          </CardDescription>
+                        )}
+                        {shop.description && (
+                          <CardDescription className="line-clamp-2">
+                            {shop.description}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+                      <CardContent>
+                        {shop.category && (
+                          <div className="mb-4">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                              {shop.category}
+                            </span>
+                          </div>
+                        )}
+                        <Button variant="outline" className="w-full">
+                          View Shop
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Store className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg mb-2">No shops available yet</p>
+                  <p className="text-sm">Shops will appear here once vendors register in your area</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
