@@ -137,17 +137,6 @@ const Home = () => {
   const userName = user?.user_metadata?.full_name || "Customer";
   const userType = user?.user_metadata?.user_type || "customer";
 
-  // Redirect vendors to vendor home
-  useEffect(() => {
-    if (userType === "vendor") {
-      navigate("/vendor-home");
-    }
-  }, [userType, navigate]);
-
-  if (userType === "vendor") {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <Navbar />

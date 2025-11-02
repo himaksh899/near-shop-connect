@@ -33,7 +33,12 @@ const Auth = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/home");
+        const userType = session.user.user_metadata?.user_type;
+        if (userType === "vendor") {
+          navigate("/vendor-home");
+        } else {
+          navigate("/home");
+        }
       }
     };
     checkUser();
@@ -72,7 +77,12 @@ const Auth = () => {
           title: "Welcome back!",
           description: "You've successfully logged in.",
         });
-        navigate("/home");
+        const userType = data.session.user.user_metadata?.user_type;
+        if (userType === "vendor") {
+          navigate("/vendor-home");
+        } else {
+          navigate("/home");
+        }
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -137,7 +147,11 @@ const Auth = () => {
           title: "Account Created!",
           description: `Welcome to NearBuy! You're signed up as a ${activeTab}.`,
         });
-        navigate("/home");
+        if (activeTab === "vendor") {
+          navigate("/vendor-home");
+        } else {
+          navigate("/home");
+        }
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
