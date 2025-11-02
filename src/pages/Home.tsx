@@ -83,7 +83,7 @@ const Home = () => {
     if (user) {
       requestLocation();
     }
-  }, [user, toast]);
+  }, [user]);
 
   useEffect(() => {
     const fetchShops = async () => {
