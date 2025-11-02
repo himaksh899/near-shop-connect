@@ -22,7 +22,9 @@ export type Database = {
           email: string | null
           id: string
           image_url: string | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
           name: string
           phone: string | null
           updated_at: string
@@ -35,7 +37,9 @@ export type Database = {
           email?: string | null
           id?: string
           image_url?: string | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           name: string
           phone?: string | null
           updated_at?: string
@@ -48,7 +52,9 @@ export type Database = {
           email?: string | null
           id?: string
           image_url?: string | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           name?: string
           phone?: string | null
           updated_at?: string

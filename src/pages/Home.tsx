@@ -6,8 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Store, MapPin, Search, Package, ShoppingCart, Heart } from "lucide-react";
+import { Store, MapPin, Search, Package, ShoppingCart, Heart, Navigation, AlertCircle } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+import { requestGeolocation, calculateDistance, type Coordinates } from "@/utils/geolocation";
+import { useToast } from "@/hooks/use-toast";
 
 interface Shop {
   id: string;
@@ -16,15 +18,22 @@ interface Shop {
   image_url: string | null;
   location: string | null;
   category: string | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 const Home = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [shops, setShops] = useState<Shop[]>([]);
   const [shopsLoading, setShopsLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [manualLocation, setManualLocation] = useState("");
+  const [showManualLocation, setShowManualLocation] = useState(false);
 
   useEffect(() => {
     // Check authentication
@@ -55,6 +64,28 @@ const Home = () => {
   }, [navigate]);
 
   useEffect(() => {
+    const requestLocation = async () => {
+      try {
+        const coords = await requestGeolocation();
+        setUserLocation(coords);
+        setLocationError(null);
+      } catch (error: any) {
+        setLocationError(error.message);
+        setShowManualLocation(true);
+        toast({
+          title: "Location access denied",
+          description: "Please enter your location manually to see nearby shops",
+          variant: "destructive",
+        });
+      }
+    };
+
+    if (user) {
+      requestLocation();
+    }
+  }, [user, toast]);
+
+  useEffect(() => {
     const fetchShops = async () => {
       setShopsLoading(true);
       const { data, error } = await supabase
@@ -75,6 +106,23 @@ const Home = () => {
     }
   }, [user]);
 
+  const filteredShops = shops
+    .map((shop) => {
+      if (userLocation && shop.latitude && shop.longitude) {
+        const distance = calculateDistance(userLocation, {
+          latitude: shop.latitude,
+          longitude: shop.longitude,
+        });
+        return { ...shop, distance };
+      }
+      return { ...shop, distance: null };
+    })
+    .sort((a, b) => {
+      if (a.distance === null) return 1;
+      if (b.distance === null) return -1;
+      return a.distance - b.distance;
+    });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -88,6 +136,17 @@ const Home = () => {
 
   const userName = user?.user_metadata?.full_name || "Customer";
   const userType = user?.user_metadata?.user_type || "customer";
+
+  // Redirect vendors to vendor home
+  useEffect(() => {
+    if (userType === "vendor") {
+      navigate("/vendor-home");
+    }
+  }, [userType, navigate]);
+
+  if (userType === "vendor") {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
@@ -105,6 +164,54 @@ const Home = () => {
               : "Manage your shop and connect with customers"}
           </p>
         </div>
+
+        {/* Location Status */}
+        {userType === "customer" && (
+          <Card className="mb-8 shadow-[var(--card-shadow-hover)]">
+            <CardContent className="p-6">
+              {userLocation ? (
+                <div className="flex items-center gap-2 text-sm">
+                  <Navigation className="h-5 w-5 text-green-500" />
+                  <span className="text-muted-foreground">
+                    Location enabled - Showing shops near you
+                  </span>
+                </div>
+              ) : showManualLocation ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-amber-600">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>Location access denied. Enter your location manually:</span>
+                  </div>
+                  <div className="flex gap-4">
+                    <Input
+                      placeholder="Enter your city or area..."
+                      value={manualLocation}
+                      onChange={(e) => setManualLocation(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => {
+                        if (manualLocation.trim()) {
+                          toast({
+                            title: "Location set",
+                            description: `Showing shops near ${manualLocation}`,
+                          });
+                        }
+                      }}
+                    >
+                      Set Location
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-5 w-5" />
+                  <span>Requesting location access...</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Search Bar */}
         {userType === "customer" && (
@@ -257,9 +364,9 @@ const Home = () => {
                     </div>
                   ))}
                 </div>
-              ) : shops.length > 0 ? (
+              ) : filteredShops.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {shops.map((shop) => (
+                  {filteredShops.map((shop) => (
                     <Card key={shop.id} className="overflow-hidden hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
                       <div className="aspect-video relative bg-muted">
                         {shop.image_url ? (
@@ -275,7 +382,14 @@ const Home = () => {
                         )}
                       </div>
                       <CardHeader>
-                        <CardTitle className="text-xl">{shop.name}</CardTitle>
+                        <div className="flex items-start justify-between">
+                          <CardTitle className="text-xl">{shop.name}</CardTitle>
+                          {shop.distance !== null && (
+                            <span className="text-sm font-medium text-primary">
+                              {shop.distance} km
+                            </span>
+                          )}
+                        </div>
                         {shop.location && (
                           <CardDescription className="flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
