@@ -8,6 +8,9 @@ import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import VendorHome from "./pages/VendorHome";
 import Profile from "./pages/Profile";
+import BrowseNearby from "./pages/BrowseNearby";
+import Orders from "./pages/Orders";
+import Favourites from "./pages/Favourites";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,9 @@ const App = () => (
           <Route path="/home" element={<Home />} />
           <Route path="/vendor-home" element={<VendorHome />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/browse-nearby" element={<BrowseNearby />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/favourites" element={<Favourites />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

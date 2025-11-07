@@ -228,7 +228,10 @@ const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {userType === "customer" ? (
             <>
-              <Card className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+              <Card 
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer"
+                onClick={() => navigate("/browse-nearby")}
+              >
                 <CardHeader>
                   <div className="p-3 rounded-xl bg-primary/10 w-fit mb-2">
                     <MapPin className="h-6 w-6 text-primary" />
@@ -245,7 +248,10 @@ const Home = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+              <Card 
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer"
+                onClick={() => navigate("/orders")}
+              >
                 <CardHeader>
                   <div className="p-3 rounded-xl bg-accent/10 w-fit mb-2">
                     <ShoppingCart className="h-6 w-6 text-accent" />
@@ -262,7 +268,10 @@ const Home = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+              <Card 
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer"
+                onClick={() => navigate("/favourites")}
+              >
                 <CardHeader>
                   <div className="p-3 rounded-xl bg-primary/10 w-fit mb-2">
                     <Heart className="h-6 w-6 text-primary" />
