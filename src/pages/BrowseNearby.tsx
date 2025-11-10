@@ -229,7 +229,11 @@ const BrowseNearby = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shops.map((shop) => (
-              <Card key={shop.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card 
+                key={shop.id} 
+                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/shop/${shop.id}`)}
+              >
                 {shop.image_url && (
                   <img
                     src={shop.image_url}
@@ -243,7 +247,10 @@ const BrowseNearby = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleFavourite(shop.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavourite(shop.id);
+                      }}
                     >
                       <Heart
                         className={`h-5 w-5 ${

@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import VendorHome from "./pages/VendorHome";
 import Profile from "./pages/Profile";
 import BrowseNearby from "./pages/BrowseNearby";
+import ShopDetail from "./pages/ShopDetail";
+import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Favourites from "./pages/Favourites";
 import NotFound from "./pages/NotFound";
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/vendor-home" element={<VendorHome />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/browse-nearby" element={<BrowseNearby />} />
+          <Route path="/shop/:id" element={<ShopDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/favourites" element={<Favourites />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
