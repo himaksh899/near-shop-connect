@@ -46,7 +46,29 @@ const BrowseNearby = () => {
     try {
       const location = await requestGeolocation();
       setUserLocation(location);
+      toast.success(`Location detected: ${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`);
+      
+      // Automatically fetch nearby shops after getting location
+      setLoading(false);
+      setFetchingNearby(true);
+      
+      const { data, error } = await supabase.functions.invoke('fetch-nearby-shops', {
+        body: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          radius: 5000,
+        },
+      });
+
+      if (error) {
+        console.error("Error fetching nearby shops:", error);
+        toast.error("Failed to fetch nearby shops. You can try again with the button.");
+      } else {
+        toast.success(`Found ${data.shops.length} nearby shops!`);
+      }
+      
       await loadShops(location);
+      setFetchingNearby(false);
     } catch (error) {
       toast.error("Please enable location access to see nearby shops");
       setLoading(false);
