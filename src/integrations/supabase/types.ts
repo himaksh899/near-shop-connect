@@ -46,6 +46,9 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          delivery_address: string | null
+          delivery_fee: number | null
+          delivery_type: string | null
           id: string
           items: Json
           shop_id: string
@@ -56,6 +59,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          delivery_address?: string | null
+          delivery_fee?: number | null
+          delivery_type?: string | null
           id?: string
           items: Json
           shop_id: string
@@ -66,6 +72,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          delivery_address?: string | null
+          delivery_fee?: number | null
+          delivery_type?: string | null
           id?: string
           items?: Json
           shop_id?: string
@@ -77,6 +86,53 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "orders_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          shop_id: string
+          stock: number | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          shop_id: string
+          stock?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          shop_id?: string
+          stock?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_shop_id_fkey"
             columns: ["shop_id"]
             isOneToOne: false
             referencedRelation: "shops"
@@ -118,6 +174,8 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string
+          delivery_available: boolean | null
+          delivery_fee: number | null
           description: string | null
           email: string | null
           id: string
@@ -127,12 +185,15 @@ export type Database = {
           longitude: number | null
           name: string
           phone: string | null
+          pickup_available: boolean | null
           updated_at: string
           user_id: string
         }
         Insert: {
           category?: string | null
           created_at?: string
+          delivery_available?: boolean | null
+          delivery_fee?: number | null
           description?: string | null
           email?: string | null
           id?: string
@@ -142,12 +203,15 @@ export type Database = {
           longitude?: number | null
           name: string
           phone?: string | null
+          pickup_available?: boolean | null
           updated_at?: string
           user_id: string
         }
         Update: {
           category?: string | null
           created_at?: string
+          delivery_available?: boolean | null
+          delivery_fee?: number | null
           description?: string | null
           email?: string | null
           id?: string
@@ -157,6 +221,7 @@ export type Database = {
           longitude?: number | null
           name?: string
           phone?: string | null
+          pickup_available?: boolean | null
           updated_at?: string
           user_id?: string
         }
