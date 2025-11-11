@@ -7,6 +7,9 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import VendorHome from "./pages/VendorHome";
+import VendorShop from "./pages/VendorShop";
+import VendorProducts from "./pages/VendorProducts";
+import VendorOrders from "./pages/VendorOrders";
 import Profile from "./pages/Profile";
 import BrowseNearby from "./pages/BrowseNearby";
 import ShopDetail from "./pages/ShopDetail";
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/home" element={<Home />} />
           <Route path="/vendor-home" element={<VendorHome />} />
+          <Route path="/vendor-shop" element={<VendorShop />} />
+          <Route path="/vendor-products" element={<VendorProducts />} />
+          <Route path="/vendor-orders" element={<VendorOrders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/browse-nearby" element={<BrowseNearby />} />
           <Route path="/shop/:id" element={<ShopDetail />} />

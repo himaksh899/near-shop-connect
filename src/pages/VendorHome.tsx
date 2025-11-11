@@ -94,7 +94,7 @@ const VendorHome = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button size="lg" className="gap-2">
+              <Button size="lg" className="gap-2" onClick={() => navigate('/vendor-shop')}>
                 <Plus className="w-5 h-5" />
                 Create Your Shop
               </Button>
@@ -121,7 +121,10 @@ const VendorHome = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => navigate('/vendor-shop')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <Store className="w-6 h-6 text-primary" />
@@ -133,7 +136,10 @@ const VendorHome = () => {
             </CardHeader>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => navigate('/vendor-products')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <Package className="w-6 h-6 text-primary" />
@@ -145,7 +151,10 @@ const VendorHome = () => {
             </CardHeader>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card 
+            className="hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => navigate('/vendor-orders')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <ShoppingCart className="w-6 h-6 text-primary" />
