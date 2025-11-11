@@ -198,7 +198,7 @@ const VendorHome = () => {
                 <div className="text-sm text-muted-foreground">Customers</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">$0</div>
+                <div className="text-3xl font-bold text-primary">₹0</div>
                 <div className="text-sm text-muted-foreground">Revenue</div>
               </div>
             </div>

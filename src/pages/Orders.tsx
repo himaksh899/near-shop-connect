@@ -132,7 +132,7 @@ const Orders = () => {
                       Location: {order.shops.location}
                     </p>
                     <p className="text-lg font-semibold">
-                      Total: ${order.total_amount.toFixed(2)}
+                      Total: ₹{order.total_amount.toFixed(2)}
                     </p>
                   </div>
                 </CardContent>

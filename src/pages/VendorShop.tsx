@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 
@@ -19,8 +19,11 @@ const VendorShop = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [shopId, setShopId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   
   // Form state
   const [name, setName] = useState('');
@@ -61,6 +64,7 @@ const VendorShop = () => {
       setPhone(data.phone || '');
       setEmail(data.email || '');
       setImageUrl(data.image_url || '');
+      setImagePreview(data.image_url || null);
       setDeliveryAvailable(data.delivery_available ?? true);
       setPickupAvailable(data.pickup_available ?? true);
       setDeliveryFee(data.delivery_fee?.toString() || '0');
@@ -68,11 +72,62 @@ const VendorShop = () => {
     setLoading(false);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/shop-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('shop-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('shop-images')
+        .getPublicUrl(fileName);
+
+      return data.publicUrl;
+    } catch (error: any) {
+      toast({
+        title: 'Upload Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
     try {
+      let finalImageUrl = imageUrl;
+
+      // Upload image if a new file was selected
+      if (imageFile) {
+        const uploadedUrl = await uploadImage(imageFile);
+        if (uploadedUrl) {
+          finalImageUrl = uploadedUrl;
+        }
+      }
+
       const shopData = {
         user_id: user.id,
         name,
@@ -81,7 +136,7 @@ const VendorShop = () => {
         category,
         phone,
         email,
-        image_url: imageUrl,
+        image_url: finalImageUrl,
         delivery_available: deliveryAvailable,
         pickup_available: pickupAvailable,
         delivery_fee: parseFloat(deliveryFee) || 0,
@@ -231,7 +286,50 @@ const VendorShop = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="imageUrl">Shop Image URL</Label>
+                <Label>Shop Image</Label>
+                {imagePreview && (
+                  <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+                    <img
+                      src={imagePreview}
+                      alt="Shop preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => {
+                        setImageFile(null);
+                        setImagePreview(null);
+                        setImageUrl('');
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('shop-image-file')?.click()}
+                    disabled={uploading}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {uploading ? 'Uploading...' : 'Upload Image'}
+                  </Button>
+                  <Input
+                    id="shop-image-file"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Or enter image URL:
+                </div>
                 <Input
                   id="imageUrl"
                   type="url"
@@ -260,7 +358,7 @@ const VendorShop = () => {
 
                 {deliveryAvailable && (
                   <div className="space-y-2">
-                    <Label htmlFor="deliveryFee">Delivery Fee ($)</Label>
+                    <Label htmlFor="deliveryFee">Delivery Fee (₹)</Label>
                     <Input
                       id="deliveryFee"
                       type="number"

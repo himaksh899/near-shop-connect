@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Trash2, Loader2, Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 
@@ -30,6 +30,9 @@ const VendorProducts = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Form state
   const [name, setName] = useState('');
@@ -90,6 +93,8 @@ const VendorProducts = () => {
     setStock('');
     setImageUrl('');
     setCategory('');
+    setImageFile(null);
+    setImagePreview(null);
     setEditingProduct(null);
   };
 
@@ -101,11 +106,53 @@ const VendorProducts = () => {
       setPrice(product.price.toString());
       setStock(product.stock.toString());
       setImageUrl(product.image_url || '');
+      setImagePreview(product.image_url || null);
       setCategory(product.category || '');
     } else {
       resetForm();
     }
     setIsDialogOpen(true);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${shopId}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('shop-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('shop-images')
+        .getPublicUrl(fileName);
+
+      return data.publicUrl;
+    } catch (error: any) {
+      toast({
+        title: 'Upload Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,13 +161,23 @@ const VendorProducts = () => {
 
     setSaving(true);
     try {
+      let finalImageUrl = imageUrl;
+
+      // Upload image if a new file was selected
+      if (imageFile) {
+        const uploadedUrl = await uploadImage(imageFile);
+        if (uploadedUrl) {
+          finalImageUrl = uploadedUrl;
+        }
+      }
+
       const productData = {
         shop_id: shopId,
         name,
         description: description || null,
         price: parseFloat(price),
         stock: parseInt(stock),
-        image_url: imageUrl || null,
+        image_url: finalImageUrl || null,
         category: category || null,
       };
 
@@ -234,18 +291,18 @@ const VendorProducts = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="product-price">Price ($) *</Label>
-                    <Input
-                      id="product-price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      required
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="product-price">Price (₹) *</Label>
+                  <Input
+                    id="product-price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                  />
+                </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="product-stock">Stock *</Label>
@@ -270,12 +327,56 @@ const VendorProducts = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="product-image">Image URL</Label>
+                  <Label>Product Image</Label>
+                  {imagePreview && (
+                    <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={() => {
+                          setImageFile(null);
+                          setImagePreview(null);
+                          setImageUrl('');
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('product-image-file')?.click()}
+                      disabled={uploading}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {uploading ? 'Uploading...' : 'Upload Image'}
+                    </Button>
+                    <Input
+                      id="product-image-file"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Or enter image URL:
+                  </div>
                   <Input
-                    id="product-image"
+                    id="product-image-url"
                     type="url"
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://..."
                   />
                 </div>
 
@@ -324,7 +425,7 @@ const VendorProducts = () => {
                 <CardContent>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-2xl font-bold text-primary">
-                      ${product.price.toFixed(2)}
+                      ₹{product.price.toFixed(2)}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       Stock: {product.stock}

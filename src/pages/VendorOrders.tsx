@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Loader2, Package } from 'lucide-react';
+import { ArrowLeft, Loader2, Package, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 import { format } from 'date-fns';
@@ -32,6 +32,36 @@ const VendorOrders = () => {
   useEffect(() => {
     checkShopAndLoadOrders();
   }, []);
+
+  // Realtime subscription for new orders
+  useEffect(() => {
+    if (!shopId) return;
+
+    const channel = supabase
+      .channel('vendor-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'orders',
+          filter: `shop_id=eq.${shopId}`,
+        },
+        (payload) => {
+          console.log('New order received:', payload);
+          toast({
+            title: '🔔 New Order!',
+            description: 'You have received a new order',
+          });
+          if (shopId) loadOrders(shopId);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [shopId, toast]);
 
   const checkShopAndLoadOrders = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -185,7 +215,7 @@ const VendorOrders = () => {
                             <span>
                               {item.name} x{item.quantity}
                             </span>
-                            <span>${(item.price * item.quantity).toFixed(2)}</span>
+                            <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                           </div>
                         ))}
                       </div>
@@ -195,18 +225,18 @@ const VendorOrders = () => {
                       <div className="flex justify-between text-sm mb-1">
                         <span>Subtotal</span>
                         <span>
-                          ${(order.total_amount - order.delivery_fee).toFixed(2)}
+                          ₹{(order.total_amount - order.delivery_fee).toFixed(2)}
                         </span>
                       </div>
                       {order.delivery_fee > 0 && (
                         <div className="flex justify-between text-sm mb-1">
                           <span>Delivery Fee</span>
-                          <span>${order.delivery_fee.toFixed(2)}</span>
+                          <span>₹{order.delivery_fee.toFixed(2)}</span>
                         </div>
                       )}
                       <div className="flex justify-between font-bold">
                         <span>Total</span>
-                        <span>${order.total_amount.toFixed(2)}</span>
+                        <span>₹{order.total_amount.toFixed(2)}</span>
                       </div>
                     </div>
 
