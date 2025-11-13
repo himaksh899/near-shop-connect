@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { ShoppingBag, Package } from "lucide-react";
+import { ShoppingBag, Package, Bell } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { format } from "date-fns";
 
@@ -30,7 +30,38 @@ const Orders = () => {
   useEffect(() => {
     checkAuth();
     loadOrders();
+    setupRealtimeSubscription();
   }, []);
+
+  const setupRealtimeSubscription = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const channel = supabase
+      .channel('customer-order-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          const order = payload.new as Order;
+          toast.success('Order Status Updated', {
+            description: `Your order from ${order.shops?.name || 'shop'} is now ${order.status}`,
+            icon: <Bell className="h-4 w-4" />
+          });
+          loadOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();

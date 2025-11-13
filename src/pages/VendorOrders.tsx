@@ -10,6 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 import { format } from 'date-fns';
 
+// Apply vendor theme
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-theme', 'vendor');
+}
+
 interface Order {
   id: string;
   user_id: string;

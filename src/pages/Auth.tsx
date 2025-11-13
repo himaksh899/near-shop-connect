@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Store, ShoppingBag, ArrowLeft, Loader2 } from "lucide-react";
+import { Store, ShoppingBag, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
@@ -17,6 +17,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<"customer" | "vendor">("customer");
   
   // Login state
@@ -27,6 +28,15 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupName, setSignupName] = useState("");
+
+  useEffect(() => {
+    // Hide splash screen after 2.5 seconds
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -171,6 +181,35 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  if (showSplash) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary via-primary/80 to-accent flex items-center justify-center p-4 overflow-hidden">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative inline-block mb-8">
+            <div className="absolute inset-0 bg-white/20 blur-3xl rounded-full animate-pulse"></div>
+            <Sparkles className="h-24 w-24 text-white relative animate-scale-in" strokeWidth={1.5} />
+          </div>
+          <h1 className="text-5xl font-bold text-white mb-4 animate-fade-in-up">
+            NearBuy
+          </h1>
+          <p className="text-xl text-white/90 animate-fade-in-up">
+            Connecting Local Businesses with Customers
+          </p>
+          <div className="mt-8 flex justify-center gap-4 animate-fade-in-up">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full">
+              <ShoppingBag className="h-5 w-5 text-white" />
+              <span className="text-white text-sm">Shop Nearby</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full">
+              <Store className="h-5 w-5 text-white" />
+              <span className="text-white text-sm">Sell Local</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/30 flex items-center justify-center p-4">

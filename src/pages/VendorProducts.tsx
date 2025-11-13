@@ -11,6 +11,11 @@ import { ArrowLeft, Plus, Pencil, Trash2, Loader2, Upload, X } from 'lucide-reac
 import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 
+// Apply vendor theme
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-theme', 'vendor');
+}
+
 interface Product {
   id: string;
   name: string;

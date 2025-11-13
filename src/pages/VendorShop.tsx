@@ -12,6 +12,11 @@ import { ArrowLeft, Loader2, Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 
+// Apply vendor theme
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-theme', 'vendor');
+}
+
 const categories = ['Grocery', 'Vegetables', 'Pharmacy', 'Bakery', 'Dairy', 'Food', 'Other'];
 
 const VendorShop = () => {

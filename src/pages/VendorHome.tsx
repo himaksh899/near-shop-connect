@@ -6,6 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Store, Package, ShoppingCart, Settings, Plus } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
+// Apply vendor theme
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-theme', 'vendor');
+}
+
 interface Shop {
   id: string;
   name: string;
