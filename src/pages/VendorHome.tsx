@@ -65,10 +65,18 @@ const VendorHome = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="text-center space-y-4">
-          <Store className="w-16 h-16 mx-auto text-primary animate-pulse" />
-          <p className="text-lg text-muted-foreground">Loading your shop...</p>
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-accent/20 flex items-center justify-center overflow-hidden">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative inline-block mb-8">
+            <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full animate-pulse"></div>
+            <Store className="h-20 w-20 text-primary relative animate-scale-in" strokeWidth={1.5} />
+          </div>
+          <h2 className="text-3xl font-bold text-foreground mb-2 animate-fade-in-up">
+            Vendor Dashboard
+          </h2>
+          <p className="text-muted-foreground animate-fade-in-up">
+            Loading your business tools...
+          </p>
         </div>
       </div>
     );
@@ -127,7 +135,7 @@ const VendorHome = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer"
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
             onClick={() => navigate('/vendor-shop')}
           >
             <CardHeader>
@@ -142,7 +150,7 @@ const VendorHome = () => {
           </Card>
 
           <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer"
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
             onClick={() => navigate('/vendor-products')}
           >
             <CardHeader>
@@ -157,7 +165,7 @@ const VendorHome = () => {
           </Card>
 
           <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer"
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
             onClick={() => navigate('/vendor-orders')}
           >
             <CardHeader>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { MapPin, Heart, Store, Loader2 } from "lucide-react";
+import { MapPin, Heart, Store, Loader2, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { calculateDistance, requestGeolocation } from "@/utils/geolocation";
 
@@ -181,15 +181,18 @@ const BrowseNearby = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto p-6">
-          <Skeleton className="h-8 w-64 mb-6" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-64 w-full" />
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center overflow-hidden">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative inline-block mb-8">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse"></div>
+            <MapPin className="h-20 w-20 text-primary relative animate-scale-in" strokeWidth={1.5} />
           </div>
+          <h2 className="text-3xl font-bold text-foreground mb-2 animate-fade-in-up">
+            Finding Shops Near You
+          </h2>
+          <p className="text-muted-foreground animate-fade-in-up">
+            Discovering amazing local businesses...
+          </p>
         </div>
       </div>
     );

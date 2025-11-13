@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Store, MapPin, Search, Package, ShoppingCart, Heart, Navigation, AlertCircle } from "lucide-react";
+import { Store, MapPin, Search, Package, ShoppingCart, Heart, Navigation, AlertCircle, Sparkles } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { requestGeolocation, calculateDistance, type Coordinates } from "@/utils/geolocation";
 import { useToast } from "@/hooks/use-toast";
@@ -125,10 +125,18 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <Store className="h-12 w-12 text-primary" />
-          <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex items-center justify-center overflow-hidden">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative inline-block mb-8">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse"></div>
+            <Sparkles className="h-20 w-20 text-primary relative animate-scale-in" strokeWidth={1.5} />
+          </div>
+          <h2 className="text-3xl font-bold text-foreground mb-2 animate-fade-in-up">
+            Welcome to NearBuy
+          </h2>
+          <p className="text-muted-foreground animate-fade-in-up">
+            Loading your personalized experience...
+          </p>
         </div>
       </div>
     );
@@ -229,7 +237,7 @@ const Home = () => {
           {userType === "customer" ? (
             <>
               <Card 
-                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer"
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer hover:scale-105 transition-transform"
                 onClick={() => navigate("/browse-nearby")}
               >
                 <CardHeader>
@@ -249,7 +257,7 @@ const Home = () => {
               </Card>
 
               <Card 
-                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer"
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer hover:scale-105 transition-transform"
                 onClick={() => navigate("/orders")}
               >
                 <CardHeader>
@@ -269,7 +277,7 @@ const Home = () => {
               </Card>
 
               <Card 
-                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer"
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer hover:scale-105 transition-transform"
                 onClick={() => navigate("/favourites")}
               >
                 <CardHeader>
@@ -290,7 +298,10 @@ const Home = () => {
             </>
           ) : (
             <>
-              <Card className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+              <Card 
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => navigate("/vendor-shop")}
+              >
                 <CardHeader>
                   <div className="p-3 rounded-xl bg-primary/10 w-fit mb-2">
                     <Store className="h-6 w-6 text-primary" />
@@ -307,7 +318,10 @@ const Home = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+              <Card 
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => navigate("/vendor-products")}
+              >
                 <CardHeader>
                   <div className="p-3 rounded-xl bg-accent/10 w-fit mb-2">
                     <Package className="h-6 w-6 text-accent" />
@@ -324,7 +338,10 @@ const Home = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer">
+              <Card 
+                className="shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-all cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => navigate("/vendor-orders")}
+              >
                 <CardHeader>
                   <div className="p-3 rounded-xl bg-primary/10 w-fit mb-2">
                     <ShoppingCart className="h-6 w-6 text-primary" />

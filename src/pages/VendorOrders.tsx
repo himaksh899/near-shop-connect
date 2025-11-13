@@ -153,8 +153,19 @@ const VendorOrders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-accent/20 flex items-center justify-center overflow-hidden">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative inline-block mb-8">
+            <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full animate-pulse"></div>
+            <Package className="h-20 w-20 text-primary relative animate-scale-in" strokeWidth={1.5} />
+          </div>
+          <h2 className="text-3xl font-bold text-foreground mb-2 animate-fade-in-up">
+            Loading Orders
+          </h2>
+          <p className="text-muted-foreground animate-fade-in-up">
+            Fetching customer orders...
+          </p>
+        </div>
       </div>
     );
   }

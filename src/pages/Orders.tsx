@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { ShoppingBag, Package, Bell } from "lucide-react";
+import { ShoppingBag, Package, Bell, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { format } from "date-fns";
 
@@ -110,15 +110,18 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto p-6">
-          <Skeleton className="h-8 w-64 mb-6" />
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-32 w-full" />
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex items-center justify-center overflow-hidden">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative inline-block mb-8">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse"></div>
+            <Package className="h-20 w-20 text-primary relative animate-scale-in" strokeWidth={1.5} />
           </div>
+          <h2 className="text-3xl font-bold text-foreground mb-2 animate-fade-in-up">
+            Loading Your Orders
+          </h2>
+          <p className="text-muted-foreground animate-fade-in-up">
+            Fetching your order history...
+          </p>
         </div>
       </div>
     );
